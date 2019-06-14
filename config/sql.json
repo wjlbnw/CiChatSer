@@ -1,0 +1,6 @@
+{
+    "host"     : "localhost",
+    "user"     : "wjl",
+    "password" : "000000",
+    "database" : "music_drift"
+  }
