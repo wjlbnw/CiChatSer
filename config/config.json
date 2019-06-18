@@ -1,0 +1,8 @@
+{
+    "sqlConfig":{
+        "host"     : "localhost",
+        "user"     : "wjl",
+        "password" : "000000",
+        "database" : "cichat"
+      }
+}
