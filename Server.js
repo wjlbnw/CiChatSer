@@ -51,7 +51,9 @@ app.get('/res/image/*',(req,res)=>{
 // 监听端口
 server.listen(8123);
 const users=new Map([]);//在线列表
-
+const meetings=new Map([
+    ['一号会议',['zh','wjl','tyx']]
+]);
 io.on('connection', function (socket) {
     socket.emit('news', { hello: 'world' });
     socket.on('my other event', function (data) {
@@ -82,11 +84,25 @@ io.on('connection', function (socket) {
         if(msg.type!='text'){
             return;
         }
-
-        let receiversck=users.get(msg.receiver);
-        if(receiversck){
-            receiversck.emit('receive',msg);
+        if(msg.receiver_type!='会议'){
+            let receiversck=users.get(msg.receiver);
+            if(receiversck){
+                receiversck.emit('receive',msg);
+            }
+        }else{
+            let parts=meetings.get(msg.receiver);
+            if(parts){
+                for(part of parts){
+                    if(part==msg.sender){continue;}
+                    let receiversck=users.get(part);
+                    if(receiversck){
+                    receiversck.emit('receive',msg);
+                    }
+                }
+                
+            }
         }
+        
         
 
     });
@@ -121,10 +137,28 @@ app.post("/upload", function (req, res) {
       message.content=newPath.substr(1);
       console.log(message.content);
 
-      let receiversck=users.get(message.receiver);
+      if(message.receiver_type!='会议'){
+        let receiversck=users.get(message.receiver);
         if(receiversck){
             receiversck.emit('receive',message);
         }
+    }else{
+        let parts=meetings.get(message.receiver);
+        if(parts){
+            for(part of parts){
+                if(part==message.sender){continue;}
+                let receiversck=users.get(part);
+                if(receiversck){
+                receiversck.emit('receive',message);
+                }
+            }
+            
+        }
+    }
+    //   let receiversck=users.get(message.receiver);
+    //     if(receiversck){
+    //         receiversck.emit('receive',message);
+    //     }
       //读取数据后 删除文件
       // fs.unlink(newPath, function () {
       //   console.log("删除上传文件");
