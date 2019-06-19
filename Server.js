@@ -39,6 +39,89 @@ app.post('/login',(req,res)=>{
            
     });
 });
+app.post('/register',(req,res)=>{
+    console.log('/register接入');
+    console.log(req.body);
+    let {username:username,password:pwd}=req.body;
+    dao.daocon.query(`
+    insert into users (user_name,password) values('${username}','${pwd}');
+    `,function(err,results){
+        if(err){
+            console.log(err);
+            res.send({
+                result:false,
+                message:'用户名重复'
+            });
+            return;
+        }
+        console.log(results);
+        res.send({
+            result:false,
+            message:'注册成功'
+        })
+    });
+    
+    
+});
+app.post('/searchUsers',(req,res)=>{
+    dao.daocon.query(`
+    select user_name,id from users;
+    `,function(err,results){
+        if(err){
+            console.log(err);
+            res.send({
+                result:false,
+                message:'用户组异常'
+            });
+            return;
+        }
+        console.log(results);
+        res.send({
+            result:false,
+            list:results
+        })
+    });
+    
+    
+});
+
+app.post('/addCon',(req,res)=>{
+    let {f1_name,f2}=req.body;
+    dao.daocon.query(`
+    select id from users where user_name='${f1_name}';
+    `,function(err,results){
+        if(err){
+            console.log(err);
+            res.send({
+                result:false,
+                message:'目标用户异常'
+            });
+            return;
+        }
+        console.log(results);
+        dao.daocon.query(`
+        insert into connect (f1,f2) values(${results[0].id},${f2}),(${f2},${results[0].id});
+        `,function(err,results){
+            if(err){
+                console.log(err);
+                res.send({
+                    result:false,
+                    message:'对方在你的好友列表中'
+                });
+                return;
+            }
+            console.log(results);
+            res.send({
+                result:false,
+                message:'你们已经是好友了'
+            });
+            
+        });
+    });
+    
+    
+});
+
 
 app.get('/res/image/*',(req,res)=>{
     //图片加载,存储在public/images下的所有图片

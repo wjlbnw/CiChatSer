@@ -1,9 +1,11 @@
 // console.log('DAO run');
 const sql=require('mysql');
 let DAOCon=null;
+
 exports.initCon=(config)=>{
     DAOCon=sql.createConnection(config);
     DAOCon.connect();
+    exports.daocon=DAOCon;
     // console.log('connected');
 }
 exports.end=()=>{
